@@ -29,27 +29,20 @@
 
     function connectWS() {
         ws = new WebSocket("ws://192.168.31.92:80/api/v1/ws");
-        ws.onopen = function(event) {
-            console.log("WebSocket is open now.");
-            document.querySelector("#connect-led").style.backgroundColor = "greenyellow";
-        }
-
-        ws.onclose = function(event) {
-            console.log("WebSocket is closed now.");
-            document.querySelector("#connect-led").style.backgroundColor = "red";
-            connectWS();
-        };
         ws.onmessage = function(msg) {
             console.log("ws onmessage");
-
+            console.log(msg.data.length)
             let receivedJson = JSON.parse(msg.data);
 
             let updateType = receivedJson["type"];
             let receivedData = receivedJson["data"];
 
             if (updateType == "replace") {
+                console.log('replace')
+                console.log(JSON.stringify(receivedData))
                 canvas.loadFromJSON(JSON.stringify(receivedData));
             } else if (updateType == "add") {
+                console.log('add')
                 let oldCanvasJson = canvas.toJSON();
                 oldCanvasJson["objects"].push(receivedData);
                 canvas.loadFromJSON(JSON.stringify(oldCanvasJson));
@@ -57,9 +50,31 @@
                 console.log(updateType + " ???");
             }
         };
+        ws.onopen = function(event) {
+            console.log("WebSocket is open now.");
+            document.querySelector("#connect-led").style.backgroundColor = "greenyellow";
+
+            const Http = new XMLHttpRequest();
+            Http.open("GET", "http://192.168.31.92:80/api/v1/board/1");
+            Http.send();
+
+            Http.onreadystatechange = (e) => {
+                let js = Http.responseText;
+                console.log(js);
+                canvas.loadFromJSON(js);
+            }
+
+        }
+
+        ws.onclose = function(event) {
+            console.log("WebSocket is closed now.");
+            document.querySelector("#connect-led").style.backgroundColor = "red";
+            connectWS();
+        };
+
     }
     connectWS();
-
+    console.log(JSON.stringify(canvas.toJSON()));
     //绑定画板事件
     canvas.on("mouse:down", function(options) {
         var xy = transformMouse(options.e.offsetX, options.e.offsetY);
