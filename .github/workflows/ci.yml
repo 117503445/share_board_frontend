@@ -1,0 +1,17 @@
+name: MainWorkflow
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: upload files to OSS
+      uses: fangbinwei/aliyun-oss-website-action@v1
+      with:
+          accessKeyId: ${{ secrets.ACCESS_KEY_ID }}
+          accessKeySecret: ${{ secrets.ACCESS_KEY_SECRET }}
+          bucket: share-board
+          endpoint: https://oss-cn-hangzhou.aliyuncs.com
+          folder: .
