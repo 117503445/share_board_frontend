@@ -28,7 +28,7 @@
     var ws;
 
     function connectWS() {
-        ws = new WebSocket("ws://192.168.31.92:80/api/v1/ws");
+        ws = new WebSocket(HOST_WS + "/api/v1/ws");
         ws.onmessage = function(msg) {
             console.log("ws onmessage");
             console.log(msg.data.length)
@@ -39,7 +39,7 @@
 
             if (updateType == "replace") {
                 console.log('replace')
-                console.log(JSON.stringify(receivedData))
+                    //console.log(JSON.stringify(receivedData))
                 canvas.loadFromJSON(JSON.stringify(receivedData));
             } else if (updateType == "add") {
                 console.log('add')
@@ -55,12 +55,12 @@
             document.querySelector("#connect-led").style.backgroundColor = "greenyellow";
 
             const Http = new XMLHttpRequest();
-            Http.open("GET", "http://192.168.31.92:80/api/v1/board/1");
+            Http.open("GET", HOST_HTTP + "/api/v1/board/1");
             Http.send();
 
             Http.onreadystatechange = (e) => {
                 let js = Http.responseText;
-                console.log(js);
+                //console.log(js);
                 canvas.loadFromJSON(js);
             }
 
