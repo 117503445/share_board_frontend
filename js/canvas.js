@@ -2,7 +2,7 @@
     //变量声明
     var mouseFrom = {},
         mouseTo = {},
-        drawType = null,
+        drawType = "pen", //绘制方法,默认为 pen
         canvasObjectIndex = 0,
         textbox = null;
     var drawWidth = 2; //笔触宽度
@@ -28,12 +28,22 @@
     var ws = new WebSocket("ws://192.168.31.92:10000/ws");
     ws.onmessage = function(msg) {
         console.log("ws onmessage");
-        let js = msg.data;
-        //console.log(js);
-        canvas.loadFromJSON(msg.data);
-        canvas.renderAll.bind(canvas);
-    };
 
+        let receivedJson = JSON.parse(msg.data);
+
+        let updateType = receivedJson["type"];
+        let receivedData = receivedJson["data"];
+
+        if (updateType == "replace") {
+            canvas.loadFromJSON(JSON.stringify(receivedData));
+        } else if (updateType == "add") {
+            let oldCanvasJson = canvas.toJSON();
+            oldCanvasJson["objects"].push(receivedData);
+            canvas.loadFromJSON(JSON.stringify(oldCanvasJson));
+        } else {
+            console.log(updateType + " ???");
+        }
+    };
     //绑定画板事件
     canvas.on("mouse:down", function(options) {
         var xy = transformMouse(options.e.offsetX, options.e.offsetY);
@@ -42,21 +52,15 @@
         doDrawing = true;
     });
     canvas.on("mouse:up", function(options) {
-        console.log('mouse:up');
-        //ws.send('ws hello')
-
-        var json = JSON.stringify(canvas.toJSON());
-
-        console.log(json.length)
-
-        // let s = "";
-        // for (let index = 0; index < 513; index++) {
-        //     s += "1";
-        // }
-        ws.send(json);
-        // console.log(json)
-
-        // canvas.loadFromJSON(json);
+        if (drawType === "remove") {
+            var json = JSON.stringify({ "type": "replace", "data": canvas.toJSON() });
+            ws.send(json);
+        } else {
+            let objects = canvas.toJSON()["objects"];
+            let lastObject = objects[objects.length - 1];
+            var json = JSON.stringify({ "type": "add", "data": lastObject });
+            ws.send(json);
+        }
 
         var xy = transformMouse(options.e.offsetX, options.e.offsetY);
         mouseTo.x = xy.x;
