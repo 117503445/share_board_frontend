@@ -25,7 +25,7 @@
     canvas.freeDrawingBrush.color = color; //设置自由绘颜色
     canvas.freeDrawingBrush.width = drawWidth;
 
-    var ws = new WebSocket("ws://192.168.31.92:10000/ws");
+    var ws = new WebSocket("ws://192.168.31.92:80/api/v1/ws");
     ws.onmessage = function(msg) {
         console.log("ws onmessage");
 

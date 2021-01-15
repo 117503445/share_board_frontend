@@ -18,10 +18,18 @@
 
 ```json
 {
-    "type":"add", // add -> 增加   replace -> 替换
+    "type":"add",
     "data":{}
 }
 ```
+
+type 取值
+
+- add: data 为新添加的笔迹数据
+
+- replace: data 为全部笔迹数据
+
+- get: data 为空,服务器返回全部笔迹数据
 
 ## 致谢
 
