@@ -25,25 +25,41 @@
     canvas.freeDrawingBrush.color = color; //设置自由绘颜色
     canvas.freeDrawingBrush.width = drawWidth;
 
-    var ws = new WebSocket("ws://192.168.31.92:80/api/v1/ws");
-    ws.onmessage = function(msg) {
-        console.log("ws onmessage");
+    var ws;
 
-        let receivedJson = JSON.parse(msg.data);
-
-        let updateType = receivedJson["type"];
-        let receivedData = receivedJson["data"];
-
-        if (updateType == "replace") {
-            canvas.loadFromJSON(JSON.stringify(receivedData));
-        } else if (updateType == "add") {
-            let oldCanvasJson = canvas.toJSON();
-            oldCanvasJson["objects"].push(receivedData);
-            canvas.loadFromJSON(JSON.stringify(oldCanvasJson));
-        } else {
-            console.log(updateType + " ???");
+    function connectWS() {
+        ws = new WebSocket("ws://192.168.31.92:80/api/v1/ws");
+        ws.onopen = function(event) {
+            console.log("WebSocket is open now.");
+            document.querySelector("#connect-led").style.backgroundColor = "greenyellow";
         }
-    };
+
+        ws.onclose = function(event) {
+            console.log("WebSocket is closed now.");
+            document.querySelector("#connect-led").style.backgroundColor = "red";
+            connectWS();
+        };
+        ws.onmessage = function(msg) {
+            console.log("ws onmessage");
+
+            let receivedJson = JSON.parse(msg.data);
+
+            let updateType = receivedJson["type"];
+            let receivedData = receivedJson["data"];
+
+            if (updateType == "replace") {
+                canvas.loadFromJSON(JSON.stringify(receivedData));
+            } else if (updateType == "add") {
+                let oldCanvasJson = canvas.toJSON();
+                oldCanvasJson["objects"].push(receivedData);
+                canvas.loadFromJSON(JSON.stringify(oldCanvasJson));
+            } else {
+                console.log(updateType + " ???");
+            }
+        };
+    }
+    connectWS();
+
     //绑定画板事件
     canvas.on("mouse:down", function(options) {
         var xy = transformMouse(options.e.offsetX, options.e.offsetY);
