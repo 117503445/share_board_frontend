@@ -33,6 +33,7 @@
         ws.onmessage = function(msg) {
             console.log("ws onmessage");
             console.log(msg.data.length)
+            console.log(msg.data)
             let receivedJson = JSON.parse(msg.data);
 
             let updateType = receivedJson["type"];
@@ -40,32 +41,38 @@
 
             if (updateType == "replace") {
                 console.log('replace')
-                    //console.log(JSON.stringify(receivedData))
                 canvas.loadFromJSON(JSON.stringify(receivedData));
             } else if (updateType == "add") {
                 console.log('add')
                 let oldCanvasJson = canvas.toJSON();
                 oldCanvasJson["objects"].push(receivedData);
                 canvas.loadFromJSON(JSON.stringify(oldCanvasJson));
+            } else if (updateType == "status") {
+                console.log('status')
+                canvas.loadFromJSON(JSON.stringify(receivedData));
             } else {
                 console.log(updateType + " ???");
             }
         };
+
+
+
         ws.onopen = function(event) {
-            console.log("WebSocket is open now.");
+            console.log("WebSocket is ready now.");
             document.querySelector("#connect-led").style.backgroundColor = "greenyellow";
 
-            const Http = new XMLHttpRequest();
-            Http.open("GET", HOST_HTTP + "/api/v1/board/1");
-            Http.send();
+            // const Http = new XMLHttpRequest();
+            // Http.open("GET", HOST_HTTP + "/api/v1/board/1");
+            // Http.send();
 
-            Http.onreadystatechange = (e) => {
-                let js = Http.responseText;
-                //console.log(js);
-                canvas.loadFromJSON(js);
-            }
-
-        }
+            // Http.onreadystatechange = (e) => {
+            //     let js = Http.responseText;
+            //     //console.log(js);
+            //     canvas.loadFromJSON(js);
+            // }
+            var json = JSON.stringify({ "type": "status", "data": { "boardid": "1", "pagenumber": pageNumber } });
+            ws.send(json);
+        };
 
         ws.onclose = function(event) {
             console.log("WebSocket is closed now.");
@@ -138,12 +145,16 @@
         console.log("prev")
         pageNumber--;
         $("#page-number").html(pageNumber)
+        var json = JSON.stringify({ "type": "status", "data": { "boardid": "1", "pagenumber": pageNumber } });
+        ws.send(json);
     })
 
     $("#next-page").on("click", function() {
         console.log("next")
         pageNumber++;
         $("#page-number").html(pageNumber)
+        var json = JSON.stringify({ "type": "status", "data": { "boardid": "1", "pagenumber": pageNumber } });
+        ws.send(json);
     })
 
     //绑定工具事件
