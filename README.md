@@ -4,6 +4,14 @@
 
 基于 Websocket 的 同步 Web 手写板
 
+## 地址
+
+前端 <https://github.com/117503445/share_board_frontend>
+
+后端 <https://github.com/117503445/share_board_backend>
+
+主要文档见 后端
+
 ## Todo
 
 - 翻页
@@ -11,23 +19,6 @@
 - 将技术栈换为 VUE
 
 - 颜色改变
-
-## 传输数据格式
-
-```json
-{
-    "type":"add",
-    "data":{}
-}
-```
-
-type 取值
-
-- add: data 为新添加的笔迹数据
-
-- replace: data 为全部笔迹数据
-
-- get: data 为空,服务器返回全部笔迹数据
 
 ## 致谢
 
