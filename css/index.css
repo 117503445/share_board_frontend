@@ -1,3 +1,7 @@
+* {
+    font-family: consolas, "microsoft yahei", Thonburi;
+}
+
 #connect-led {
     width: 50%;
     height: 50%;

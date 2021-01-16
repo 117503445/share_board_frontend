@@ -11,6 +11,7 @@
     var moveCount = 1; //绘制移动计数器
     var doDrawing = false; // 绘制状态
 
+    var pageNumber = 1; // 默认为 第一页
     //初始化画板
     var canvas = new fabric.Canvas("c", {
         isDrawingMode: true,
@@ -74,7 +75,7 @@
 
     }
     connectWS();
-    console.log(JSON.stringify(canvas.toJSON()));
+    // console.log(JSON.stringify(canvas.toJSON()));
     //绑定画板事件
     canvas.on("mouse:down", function(options) {
         var xy = transformMouse(options.e.offsetX, options.e.offsetY);
@@ -132,20 +133,39 @@
         return { x: mouseX / window.zoom, y: mouseY / window.zoom };
     }
 
+
+    $("#previous-page").on("click", function() {
+        console.log("prev")
+        pageNumber--;
+        $("#page-number").html(pageNumber)
+    })
+
+    $("#next-page").on("click", function() {
+        console.log("next")
+        pageNumber++;
+        $("#page-number").html(pageNumber)
+    })
+
     //绑定工具事件
     jQuery("#toolsul")
         .find("li")
         .on("click", function() {
+            // console.log('#toolsul click')
+            if (
+                typeof(jQuery(this).find("i").attr("class")) == "undefined"
+            ) {
+                return
+            }
             //设置样式
             jQuery("#toolsul")
                 .find("li>i")
                 .each(function() {
-                    jQuery(this).attr("class", jQuery(this).attr("data-default"));
+                    jQuery(this).attr("class", jQuery(this).attr("data-default")); // 将所有按钮的 <i> 重置为默认状态 data-default
                 });
             jQuery(this)
-                .addClass("active")
+                .addClass("active") // 把自己的 class 设为 active
                 .siblings()
-                .removeClass("active");
+                .removeClass("active"); // 移除其他按钮的 class="active"
             jQuery(this)
                 .find("i")
                 .attr(
@@ -153,7 +173,7 @@
                     jQuery(this)
                     .find("i")
                     .attr("class")
-                    .replace("black", "select")
+                    .replace("black", "select") // 将此按钮的 <i> 设置为选中的图标
                 );
             drawType = jQuery(this).attr("data-type");
             canvas.isDrawingMode = false;
