@@ -29,7 +29,7 @@
     var ws;
 
     function connectWS() {
-        ws = new WebSocket(HOST_WS + "/api/v1/ws");
+        ws = new WebSocket(HOST_WS + "/api/ws");
         ws.onmessage = function(msg) {
             console.log("ws onmessage");
             console.log(msg.data.length)
