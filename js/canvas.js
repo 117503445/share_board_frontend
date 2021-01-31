@@ -84,13 +84,19 @@
     connectWS();
     // console.log(JSON.stringify(canvas.toJSON()));
     //绑定画板事件
-    canvas.on("mouse:down", function(options) {
+
+
+    function canvas_down(options) {
         var xy = transformMouse(options.e.offsetX, options.e.offsetY);
         mouseFrom.x = xy.x;
         mouseFrom.y = xy.y;
         doDrawing = true;
-    });
-    canvas.on("mouse:up", function(options) {
+    }
+
+    canvas.on("mouse:down", canvas_down);
+    canvas.on("touch:down", canvas_down);
+
+    function canvas_up(options) {
         if (drawType === "remove") {
             var json = JSON.stringify({ "type": "replace", "data": canvas.toJSON() });
             ws.send(json);
@@ -108,8 +114,11 @@
         drawingObject = null;
         moveCount = 1;
         doDrawing = false;
-    });
-    canvas.on("mouse:move", function(options) {
+    }
+    canvas.on("mouse:up", canvas_up);
+    canvas.on("touch:up", canvas_up);
+
+    function canvas_move(options) {
         if (moveCount % 2 && !doDrawing) {
             //减少绘制频率
             return;
@@ -119,7 +128,10 @@
         mouseTo.x = xy.x;
         mouseTo.y = xy.y;
         drawing();
-    });
+    }
+
+    canvas.on("mouse:move", canvas_move);
+    canvas.on("touch:move", canvas_move);
 
     canvas.on("selection:created", function(e) {
         if (e.target._objects) {
