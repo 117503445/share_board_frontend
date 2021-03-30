@@ -2,12 +2,10 @@
   <el-container style="height: 100%; border: 1px solid #eee">
     <el-aside width="55px" style="background-color: rgb(238, 241, 246)">
       <el-radio-group v-model="tabPosition">
-        <el-radio-button label="top">top</el-radio-button>
-        <el-radio-button label="right">right</el-radio-button>
-        <el-radio-button label="bottom">bottom</el-radio-button>
-        <el-radio-button label="left">left</el-radio-button>
+        <el-radio-button label="pen">pen</el-radio-button>
+        <el-radio-button label="eraser">eraser</el-radio-button>
       </el-radio-group>
-    </el-aside> 
+    </el-aside>
 
     <el-container>
       <el-main>
@@ -18,15 +16,34 @@
 </template>
 
 <script>
+let canvas;
+
 export default {
   mounted() {
-    var canvas = new fabric.Canvas("canvas", {
+    canvas = new fabric.Canvas("canvas", {
       isDrawingMode: true,
       skipTargetFind: true,
       selectable: false,
       selection: false,
     });
 
+    canvas.on("selection:created", function (e) {
+      // 选中事件
+      // 清除所有选中的笔迹
+
+      if (e.target._objects) {
+        //多选删除
+        e.target._objects.forEach((element) => {
+          canvas.remove(element);
+        });
+      } else {
+        //单选删除
+        canvas.remove(e.target);
+      }
+      canvas.discardActiveObject(); //清除选中框
+    });
+
+    // https://www.npmjs.com/package/@arch-inc/fabricjs-psbrush 压感笔刷
     let brush = new fabric.PSBrush(canvas);
     brush.width = 3;
     brush.color = "#000";
@@ -34,25 +51,28 @@ export default {
   },
 
   data() {
-    const item = {
-      date: "2016-05-02",
-      name: "王小虎",
-      address: "上海市普陀区金沙江路 114514 弄",
-    };
     return {
-      tableData: Array(20).fill(item),
-      tabPosition: "left",
+      tabPosition: "pen",
     };
   },
+
   methods: {
     btn_click() {
       console.log("click");
     },
   },
+
   watch: {
     tabPosition: {
       handler(newValue) {
-        console.log("change to " + newValue);
+        if (newValue == "pen") {
+          canvas.isDrawingMode = true;
+        } else if (newValue == "eraser") {
+          canvas.isDrawingMode = false;
+          canvas.selection = true;
+          canvas.skipTargetFind = false;
+          canvas.selectable = true;
+        }
       },
     },
   },
