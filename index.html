@@ -1,70 +1,18 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-
-    <title>HaoTian の 共享画板</title>
-    <link rel="stylesheet" href="css/index.css">
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite App</title>
 </head>
 
-<body style="background-color: #E5E4E5;;overflow-x: hidden;">
-
-    <div style="margin-top:10px;">
-        <div style="width:50px;float:left;">
-            <ul id="toolsul" class="tools">
-                <li id="toolsPencil" data-type="pen" class="active">
-                    <i class="icon-tools icon-pen-select" data-default='icon-tools icon-pen-black'></i>
-                </li>
-                <li data-type="arrow">
-                    <i class="icon-tools icon-arrow-black" data-default='icon-tools icon-arrow-black'></i>
-                </li>
-                <li data-type="line">
-                    <i class="icon-tools icon-line-black" data-default='icon-tools icon-line-black'></i>
-                </li>
-                <li data-type="dottedline">
-                    <i class="icon-tools icon-dottedline-black" data-default='icon-tools icon-dottedline-black'></i>
-                </li>
-                <li data-type="circle">
-                    <i class="icon-tools icon-circle-black" data-default='icon-tools icon-circle-black'></i>
-                </li>
-                <li data-type="ellipse">
-                    <i class="icon-tools icon-ellipse-black" data-default='icon-tools icon-ellipse-black'></i>
-                </li>
-                <li data-type="text">
-                    <i class="icon-tools icon-text-black" data-default='icon-tools icon-text-black'></i>
-                </li>
-                <li data-type="remove">
-                    <i class="icon-tools icon-remove-black" data-default='icon-tools icon-remove-black'></i>
-                </li>
-                <li>
-                    <div id="connect-led"></div>
-                </li>
-                <li>
-                    <div id="previous-page"><svg t="1610726794351" class="icon" viewBox="0 0 1257 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="869" width="80%" height="100%"><path d="M512 1024c-11.264 0-23.552-4.096-31.744-13.312L13.312 543.744a45.12 45.12 0 0 1 0-63.488L480.256 13.312a45.12 45.12 0 0 1 63.488 0c18.432 17.408 18.432 46.08 0 64.512L109.568 512l434.176 434.176c18.432 18.432 18.432 47.104 0 64.512-8.192 9.216-20.48 13.312-31.744 13.312z m700.416-466.944H109.568A45.44 45.44 0 0 1 64.512 512c0-25.6 20.48-45.056 45.056-45.056h1102.848A44.8 44.8 0 0 1 1257.472 512a45.44 45.44 0 0 1-45.056 45.056z" p-id="870"></path></svg></div>
-                </li>
-                <li>
-                    <div id="page-number">1</div>
-                </li>
-                <li>
-                    <div id="next-page"><svg t="1610726981894" class="icon" viewBox="0 0 1257 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="999" width="80%" height="100%"><path d="M745.47264 1024c11.264 0 23.552-4.096 31.744-13.312L1244.16064 543.744a45.12 45.12 0 0 0 0-63.488L777.21664 13.312a45.12 45.12 0 0 0-63.488 0c-18.432 17.408-18.432 46.08 0 64.512L1147.90464 512 713.72864 946.176c-18.432 18.432-18.432 47.104 0 64.512 8.192 9.216 20.48 13.312 31.744 13.312zM45.05664 557.056h1102.848A45.44 45.44 0 0 0 1192.96064 512a44.8 44.8 0 0 0-45.056-45.056H45.05664A44.8 44.8 0 0 0 0.00064 512c0 24.576 20.48 45.056 45.056 45.056z" p-id="1000"></path></svg></div>
-                </li>
-
-
-            </ul>
-        </div>
-        <div id="canvasDiv" class="canvasDiv" style="width:95%;">
-            <canvas id="c" width="1920" height="1080">请使用支持HTML5的浏览器</canvas>
-        </div>
-    </div>
-
-    <script src="https://cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/fabric.js/4.3.1/fabric.min.js"></script>
-    <script src="js/defaultConfig.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/canvas.js"></script>
-    <script src="js/canvasZoom.js"></script>
-
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
+  <script src="https://cdn.bootcss.com/fabric.js/4.3.1/fabric.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@arch-inc/fabricjs-psbrush@latest/dist/index.js"></script>
 </body>
 
 </html>
