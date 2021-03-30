@@ -1,10 +1,11 @@
 <template>
   <el-container style="height: 100%; border: 1px solid #eee">
-    <el-aside width="55px" style="background-color: rgb(238, 241, 246)">
-      <el-radio-group v-model="tabPosition">
-        <el-radio-button label="pen">pen</el-radio-button>
+    <el-aside style="background-color: rgb(238, 241, 246)">
+      <el-radio-group v-model="drawMode">
+        <el-radio-button label="pen" class="el-icon-edit"></el-radio-button>
         <el-radio-button label="eraser">eraser</el-radio-button>
       </el-radio-group>
+      <el-input-number v-model="pageIndex" :min="1"></el-input-number>
     </el-aside>
 
     <el-container>
@@ -52,18 +53,13 @@ export default {
 
   data() {
     return {
-      tabPosition: "pen",
+      drawMode: "pen",
+      pageIndex: 1,
     };
   },
 
-  methods: {
-    btn_click() {
-      console.log("click");
-    },
-  },
-
   watch: {
-    tabPosition: {
+    drawMode: {
       handler(newValue) {
         if (newValue == "pen") {
           canvas.isDrawingMode = true;
@@ -80,10 +76,7 @@ export default {
 </script>
 
 <style>
-.el-button {
-  border-radius: 0px;
-  width: 50px;
-  height: 50px;
-  margin-top: 10px;
+.el-radio-button {
+  width: 60px;
 }
 </style>
