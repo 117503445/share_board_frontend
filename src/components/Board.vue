@@ -1,11 +1,15 @@
 <template>
   <el-container style="height: 100%; border: 1px solid #eee">
-    <el-aside style="background-color: rgb(238, 241, 246)">
-      <el-radio-group v-model="drawMode">
-        <el-radio-button label="pen" class="el-icon-edit"></el-radio-button>
-        <el-radio-button label="eraser">eraser</el-radio-button>
+    <el-aside style="width: 130px; background-color: rgb(238, 241, 246)">
+      <el-radio-group
+        style="display: flex; flex-direction: column"
+        v-model="drawMode"
+      >
+        <el-radio-button label="pen"></el-radio-button>
+        <el-radio-button label="eraser"></el-radio-button>
       </el-radio-group>
-      <el-input-number v-model="pageIndex" :min="1"></el-input-number>
+
+      <el-input-number v-model="pageIndex" :min="1" style="width: 130px;"></el-input-number>
     </el-aside>
 
     <el-container>
@@ -111,7 +115,7 @@ export default {
         let objects = canvas.toJSON()["objects"];
         let lastObject = objects[objects.length - 1];
         var json = JSON.stringify({ type: "add", data: lastObject });
-        console.log(json)
+        console.log(json);
         ws.send(json);
       }
     }
@@ -150,7 +154,4 @@ export default {
 </script>
 
 <style>
-.el-radio-button {
-  width: 60px;
-}
 </style>
