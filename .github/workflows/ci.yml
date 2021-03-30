@@ -14,15 +14,11 @@ jobs:
         with:
           node-version: '14'
 
-      - name: yarn install
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: install
-
-      - name: yarn build
-        uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: build
+      - name: build dist
+        run: |
+          npm install -g yarn
+          yarn install
+          yarn build
 
       - name: upload files to OSS
         uses: fangbinwei/aliyun-oss-website-action@v1
