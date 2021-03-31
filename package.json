@@ -2,7 +2,7 @@
   "name": "shareboard-front-demo",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite serve",
     "build": "vite build",
     "serve": "vite preview"
   },

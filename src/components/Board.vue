@@ -21,6 +21,9 @@
 </template>
 
 <script>
+
+console.log(import.meta.env.VITE_WS_HOST);
+console.log(import.meta.env.VITE_HTTP_HOST);
 let canvas;
 var ws;
 
@@ -31,7 +34,7 @@ function connectWS() {
   // HOST_WS = "ws://localhost";
   // HOST_HTTP = "http://localhost";
 
-  ws = new WebSocket(HOST_WS + "/api/ws");
+  ws = new WebSocket(import.meta.env.VITE_WS_HOST + "/api/ws");
   ws.onmessage = function (msg) {
     console.log("ws onmessage");
     console.log(msg.data.length);
