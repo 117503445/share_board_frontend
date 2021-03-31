@@ -12,14 +12,15 @@
 
 主要文档见 后端
 
+## 开发
+
+```sh
+yarn
+yarn dev
+```
+
 ## Todo
 
 - 不同的 board id
 
-- 将技术栈换为 VUE
-
-- 颜色改变
-
-## 致谢
-
-前端基于 <https://github.com/vipstone/drawingboard>
+- Pen 颜色改变
