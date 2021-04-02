@@ -1,5 +1,12 @@
 <template>
-  <el-container style="height: 100%; border: 1px solid #eee">
+  <el-container
+    style="
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      border: 1px solid #eee;
+    "
+  >
     <el-aside style="width: 130px; background-color: rgb(238, 241, 246)">
       <el-radio-group
         style="display: flex; flex-direction: column"
@@ -9,19 +16,23 @@
         <el-radio-button label="eraser"></el-radio-button>
       </el-radio-group>
 
-      <el-input-number v-model="pageIndex" :min="1" style="width: 130px;"></el-input-number>
+      <el-input-number
+        v-model="pageIndex"
+        :min="1"
+        style="width: 130px"
+      ></el-input-number>
     </el-aside>
 
     <el-container>
-      <el-main>
-        <canvas id="canvas" width="1920" height="1080" />
+      <el-main style="padding: 0px">
+        <!-- <div style="background-color: black; width: 100%; height: 100%"></div> -->
+        <canvas id="canvas" style="height: 100%; width: 100%" />
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
-
 console.log(import.meta.env.VITE_WS_HOST);
 console.log(import.meta.env.VITE_HTTP_HOST);
 let canvas;
@@ -37,8 +48,6 @@ function connectWS() {
   ws = new WebSocket(import.meta.env.VITE_WS_HOST + "/api/ws");
   ws.onmessage = function (msg) {
     console.log("ws onmessage");
-    console.log(msg.data.length);
-    console.log(msg.data);
     let receivedJson = JSON.parse(msg.data);
 
     let updateType = receivedJson["type"];
@@ -118,7 +127,6 @@ export default {
         let objects = canvas.toJSON()["objects"];
         let lastObject = objects[objects.length - 1];
         var json = JSON.stringify({ type: "add", data: lastObject });
-        console.log(json);
         ws.send(json);
       }
     }
