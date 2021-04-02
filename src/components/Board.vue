@@ -1,12 +1,5 @@
 <template>
-  <el-container
-    style="
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      border: 1px solid #eee;
-    "
-  >
+  <el-container style="position: absolute; height: 100%; width: 100%">
     <el-aside style="width: 130px; background-color: rgb(238, 241, 246)">
       <el-radio-group
         style="display: flex; flex-direction: column"
@@ -104,6 +97,14 @@ export default {
       selection: false,
     });
 
+    resizeCanvas();// resize canvas at init
+    window.addEventListener("resize", resizeCanvas, false);
+
+    function resizeCanvas() {
+      canvas.setWidth(window.innerWidth - 130);
+      canvas.setHeight(window.innerHeight);
+    }
+
     canvas.on("selection:created", function (e) {
       // 选中事件
       // 清除所有选中的笔迹
@@ -165,4 +166,18 @@ export default {
 </script>
 
 <style>
+html,
+body,
+#app,
+.el-container {
+  /*设置内部填充为0，几个布局元素之间没有间距*/
+  padding: 0px;
+  /*外部间距也是如此设置*/
+  margin: 0px;
+  /*统一设置高度为100%*/
+  height: 100%;
+}
+canvas {
+  display: block;
+}
 </style>
