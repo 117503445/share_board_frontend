@@ -18,7 +18,6 @@
 
     <el-container>
       <el-main style="padding: 0px">
-        <!-- <div style="background-color: black; width: 100%; height: 100%"></div> -->
         <canvas id="canvas" style="height: 100%; width: 100%" />
       </el-main>
     </el-container>
@@ -28,16 +27,11 @@
 <script>
 console.log(import.meta.env.VITE_WS_HOST);
 console.log(import.meta.env.VITE_HTTP_HOST);
+
 let canvas;
 var ws;
 
 function connectWS() {
-  let HOST_WS = "wss://shareboard.goldhome.117503445.top:18888";
-  let HOST_HTTP = "https://shareboard.goldhome.117503445.top:18888";
-
-  // HOST_WS = "ws://localhost";
-  // HOST_HTTP = "http://localhost";
-
   ws = new WebSocket(import.meta.env.VITE_WS_HOST + "/api/ws");
   ws.onmessage = function (msg) {
     console.log("ws onmessage");
@@ -65,15 +59,6 @@ function connectWS() {
   ws.onopen = function (event) {
     console.log("WebSocket is ready now.");
 
-    // const Http = new XMLHttpRequest();
-    // Http.open("GET", HOST_HTTP + "/api/v1/board/1");
-    // Http.send();
-
-    // Http.onreadystatechange = (e) => {
-    //     let js = Http.responseText;
-    //     //console.log(js);
-    //     canvas.loadFromJSON(js);
-    // }
     var json = JSON.stringify({
       type: "status",
       data: { boardid: "1", pagenumber: 1 },
@@ -97,7 +82,7 @@ export default {
       selection: false,
     });
 
-    resizeCanvas();// resize canvas at init
+    resizeCanvas(); // resize canvas at init
     window.addEventListener("resize", resizeCanvas, false);
 
     function resizeCanvas() {
@@ -170,11 +155,8 @@ html,
 body,
 #app,
 .el-container {
-  /*设置内部填充为0，几个布局元素之间没有间距*/
   padding: 0px;
-  /*外部间距也是如此设置*/
   margin: 0px;
-  /*统一设置高度为100%*/
   height: 100%;
 }
 canvas {
