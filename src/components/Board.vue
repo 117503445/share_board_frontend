@@ -37,22 +37,31 @@ function connectWS() {
     console.log("ws onmessage");
     let receivedJson = JSON.parse(msg.data);
 
-    let updateType = receivedJson["type"];
-    let receivedData = receivedJson["data"];
+    let route = receivedJson["route"];
 
-    if (updateType == "replace") {
-      console.log("replace");
-      canvas.loadFromJSON(JSON.stringify(receivedData));
-    } else if (updateType == "add") {
-      console.log("add");
+    if (route == "stroke-create") {
+      let receivedData = receivedJson["data"];
+
       let oldCanvasJson = canvas.toJSON();
       oldCanvasJson["objects"].push(receivedData);
+
       canvas.loadFromJSON(JSON.stringify(oldCanvasJson));
-    } else if (updateType == "status") {
-      console.log("status");
-      canvas.loadFromJSON(JSON.stringify(receivedData));
+    } else if (route == "strokes-delete") {
+      let deleteIdArray = receivedJson["id"];
+
+      let canvasJson = canvas.toJSON();
+      // console.log(canvasJson);
+
+      canvasJson["objects"] = canvasJson["objects"].filter(
+        (obj) => deleteIdArray.indexOf(obj["startTime"]) == -1
+      );
+
+      canvas.loadFromJSON(JSON.stringify(canvasJson));
+
+      // console.log(deleteIdArray);
+      // console.log(canvasJson);
     } else {
-      console.log(updateType + " ???");
+      console.log(route + " ???");
     }
   };
 
@@ -75,6 +84,8 @@ connectWS();
 
 export default {
   mounted() {
+    let self = this;
+
     canvas = new fabric.Canvas("canvas", {
       isDrawingMode: true,
       skipTargetFind: true,
@@ -94,25 +105,28 @@ export default {
       // 选中事件
       // 清除所有选中的笔迹
 
+      let removeIdList = new Array();
       if (e.target._objects) {
         //多选删除
         e.target._objects.forEach((element) => {
+          removeIdList.push(element["startTime"]);
           canvas.remove(element);
         });
       } else {
         //单选删除
+        removeIdList.push(e.target["startTime"]);
         canvas.remove(e.target);
       }
       canvas.discardActiveObject(); //清除选中框
+
+      var json = JSON.stringify({ route: "strokes-delete", id: removeIdList });
+      ws.send(json);
     });
     function canvas_up(options) {
-      if (this.drawMode === "eraser") {
-        var json = JSON.stringify({ type: "replace", data: canvas.toJSON() });
-        ws.send(json);
-      } else {
+      if (self.drawMode === "pen") {
         let objects = canvas.toJSON()["objects"];
         let lastObject = objects[objects.length - 1];
-        var json = JSON.stringify({ type: "add", data: lastObject });
+        var json = JSON.stringify({ route: "stroke-create", data: lastObject });
         ws.send(json);
       }
     }
