@@ -34,7 +34,7 @@ var ws;
 function connectWS() {
   ws = new WebSocket(import.meta.env.VITE_WS_HOST + "/api/ws");
   ws.onmessage = function (msg) {
-    console.log("ws onmessage");
+    // console.log("ws onmessage");
     let receivedJson = JSON.parse(msg.data);
 
     let route = receivedJson["route"];
@@ -161,6 +161,17 @@ export default {
           canvas.skipTargetFind = false;
           canvas.selectable = true;
         }
+      },
+    },
+
+    pageIndex: {
+      handler(newValue) {
+        var json = JSON.stringify({
+          route: "change-page-index",
+          boardId: "1",
+          pageId: newValue,
+        });
+        ws.send(json);
       },
     },
   },
