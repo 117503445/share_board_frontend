@@ -14,6 +14,9 @@
         :min="1"
         style="width: 130px"
       ></el-input-number>
+
+      <i v-if="isConnected" class="el-icon-loading"></i>
+      <i v-else class="el-icon-magic-stick"></i>
     </el-aside>
 
     <el-container>
@@ -25,69 +28,69 @@
 </template>
 
 <script>
-console.log(import.meta.env.VITE_WS_HOST);
-console.log(import.meta.env.VITE_HTTP_HOST);
-
-let canvas;
-var ws;
-
-function connectWS() {
-  ws = new WebSocket(import.meta.env.VITE_WS_HOST + "/api/ws");
-  ws.onmessage = function (msg) {
-    // console.log("ws onmessage");
-    let receivedJson = JSON.parse(msg.data);
-
-    let route = receivedJson["route"];
-
-    if (route == "stroke-create") {
-      let receivedData = receivedJson["data"];
-
-      let oldCanvasJson = canvas.toJSON();
-      oldCanvasJson["objects"].push(receivedData);
-
-      canvas.loadFromJSON(JSON.stringify(oldCanvasJson));
-    } else if (route == "strokes-delete") {
-      let deleteIdArray = receivedJson["id"];
-
-      let canvasJson = canvas.toJSON();
-      // console.log(canvasJson);
-
-      canvasJson["objects"] = canvasJson["objects"].filter(
-        (obj) => deleteIdArray.indexOf(obj["startTime"]) == -1
-      );
-
-      canvas.loadFromJSON(JSON.stringify(canvasJson));
-
-      // console.log(deleteIdArray);
-      // console.log(canvasJson);
-    } else if (route == "strokes-set") {
-      let canvasJson = canvas.toJSON();
-      canvasJson["objects"] = receivedJson["data"];
-      canvas.loadFromJSON(JSON.stringify(canvasJson));
-    }
-  };
-
-  ws.onopen = function (event) {
-    console.log("WebSocket is ready now.");
-
-    var json = JSON.stringify({
-      route: "change-page-index",
-      boardId: "1",
-      pageId: 1,
-    });
-    ws.send(json);
-  };
-
-  ws.onclose = function (event) {
-    console.log("WebSocket is closed now.");
-    connectWS();
-  };
-}
-connectWS();
-
 export default {
   mounted() {
     let self = this;
+    console.log(import.meta.env.VITE_WS_HOST);
+    console.log(import.meta.env.VITE_HTTP_HOST);
+
+    let canvas;
+    var ws;
+
+    function connectWS() {
+      ws = new WebSocket(import.meta.env.VITE_WS_HOST + "/api/ws");
+      ws.onmessage = function (msg) {
+        // console.log("ws onmessage");
+        let receivedJson = JSON.parse(msg.data);
+
+        let route = receivedJson["route"];
+
+        if (route == "stroke-create") {
+          let receivedData = receivedJson["data"];
+
+          let oldCanvasJson = canvas.toJSON();
+          oldCanvasJson["objects"].push(receivedData);
+
+          canvas.loadFromJSON(JSON.stringify(oldCanvasJson));
+        } else if (route == "strokes-delete") {
+          let deleteIdArray = receivedJson["id"];
+
+          let canvasJson = canvas.toJSON();
+          // console.log(canvasJson);
+
+          canvasJson["objects"] = canvasJson["objects"].filter(
+            (obj) => deleteIdArray.indexOf(obj["startTime"]) == -1
+          );
+
+          canvas.loadFromJSON(JSON.stringify(canvasJson));
+
+          // console.log(deleteIdArray);
+          // console.log(canvasJson);
+        } else if (route == "strokes-set") {
+          let canvasJson = canvas.toJSON();
+          canvasJson["objects"] = receivedJson["data"];
+          canvas.loadFromJSON(JSON.stringify(canvasJson));
+        }
+      };
+
+      ws.onopen = function (event) {
+        // console.log("WebSocket is ready now.");
+        self.isConnected = false;
+        var json = JSON.stringify({
+          route: "change-page-index",
+          boardId: "1",
+          pageId: 1,
+        });
+        ws.send(json);
+      };
+
+      ws.onclose = function (event) {
+        // console.log("WebSocket is closed now.");
+        self.isConnected = true;
+        connectWS();
+      };
+    }
+    connectWS();
 
     canvas = new fabric.Canvas("canvas", {
       isDrawingMode: true,
@@ -147,6 +150,7 @@ export default {
     return {
       drawMode: "pen",
       pageIndex: 1,
+      isConnected: false,
     };
   },
 
