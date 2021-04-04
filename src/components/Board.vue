@@ -60,8 +60,10 @@ function connectWS() {
 
       // console.log(deleteIdArray);
       // console.log(canvasJson);
-    } else {
-      console.log(route + " ???");
+    } else if (route == "strokes-set") {
+      let canvasJson = canvas.toJSON();
+      canvasJson["objects"] = receivedJson["data"];
+      canvas.loadFromJSON(JSON.stringify(canvasJson));
     }
   };
 
@@ -69,8 +71,9 @@ function connectWS() {
     console.log("WebSocket is ready now.");
 
     var json = JSON.stringify({
-      type: "status",
-      data: { boardid: "1", pagenumber: 1 },
+      route: "change-page-index",
+      boardId: "1",
+      pageId: 1,
     });
     ws.send(json);
   };
@@ -104,7 +107,6 @@ export default {
     canvas.on("selection:created", function (e) {
       // 选中事件
       // 清除所有选中的笔迹
-
       let removeIdList = new Array();
       if (e.target._objects) {
         //多选删除
@@ -127,6 +129,7 @@ export default {
         let objects = canvas.toJSON()["objects"];
         let lastObject = objects[objects.length - 1];
         var json = JSON.stringify({ route: "stroke-create", data: lastObject });
+        // console.log(json);
         ws.send(json);
       }
     }
