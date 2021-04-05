@@ -28,13 +28,66 @@
 </template>
 
 <script>
+let canvas;
 export default {
   mounted() {
     let self = this;
     console.log(import.meta.env.VITE_WS_HOST);
     console.log(import.meta.env.VITE_HTTP_HOST);
 
-    let canvas;
+    canvas = new fabric.Canvas("canvas", {
+      isDrawingMode: true,
+      skipTargetFind: true,
+      selectable: false,
+      selection: false,
+    });
+
+    function resizeCanvas() {
+      canvas.setWidth(window.innerWidth - 130);
+      canvas.setHeight(window.innerHeight);
+    }
+    resizeCanvas(); // resize canvas at init
+    window.addEventListener("resize", resizeCanvas, false);
+
+    canvas.on("selection:created", function (e) {
+      canvas.discardActiveObject(); //清除选中框
+
+      // 选中事件
+      // 清除所有选中的笔迹
+      let removeIdList = new Array();
+      if (e.target._objects) {
+        //多选删除
+        e.target._objects.forEach((element) => {
+          removeIdList.push(element["startTime"]);
+          canvas.remove(element);
+        });
+      } else {
+        //单选删除
+        removeIdList.push(e.target["startTime"]);
+        canvas.remove(e.target);
+      }
+
+      var json = JSON.stringify({ route: "strokes-delete", id: removeIdList });
+      ws.send(json);
+    });
+    function canvas_up(options) {
+      if (self.drawMode === "pen") {
+        let objects = canvas.toJSON()["objects"];
+        let lastObject = objects[objects.length - 1];
+        var json = JSON.stringify({ route: "stroke-create", data: lastObject });
+        // console.log(json);
+        ws.send(json);
+      }
+    }
+    canvas.on("mouse:up", canvas_up);
+    canvas.on("touch:up", canvas_up);
+
+    // https://www.npmjs.com/package/@arch-inc/fabricjs-psbrush 压感笔刷
+    let brush = new fabric.PSBrush(canvas);
+    brush.width = 3;
+    brush.color = "#000";
+    canvas.freeDrawingBrush = brush;
+
     var ws;
 
     function connectWS() {
@@ -91,59 +144,6 @@ export default {
       };
     }
     connectWS();
-
-    canvas = new fabric.Canvas("canvas", {
-      isDrawingMode: true,
-      skipTargetFind: true,
-      selectable: false,
-      selection: false,
-    });
-
-    resizeCanvas(); // resize canvas at init
-    window.addEventListener("resize", resizeCanvas, false);
-
-    function resizeCanvas() {
-      canvas.setWidth(window.innerWidth - 130);
-      canvas.setHeight(window.innerHeight);
-    }
-
-    canvas.on("selection:created", function (e) {
-      // 选中事件
-      // 清除所有选中的笔迹
-      let removeIdList = new Array();
-      if (e.target._objects) {
-        //多选删除
-        e.target._objects.forEach((element) => {
-          removeIdList.push(element["startTime"]);
-          canvas.remove(element);
-        });
-      } else {
-        //单选删除
-        removeIdList.push(e.target["startTime"]);
-        canvas.remove(e.target);
-      }
-      canvas.discardActiveObject(); //清除选中框
-
-      var json = JSON.stringify({ route: "strokes-delete", id: removeIdList });
-      ws.send(json);
-    });
-    function canvas_up(options) {
-      if (self.drawMode === "pen") {
-        let objects = canvas.toJSON()["objects"];
-        let lastObject = objects[objects.length - 1];
-        var json = JSON.stringify({ route: "stroke-create", data: lastObject });
-        // console.log(json);
-        ws.send(json);
-      }
-    }
-    canvas.on("mouse:up", canvas_up);
-    canvas.on("touch:up", canvas_up);
-
-    // https://www.npmjs.com/package/@arch-inc/fabricjs-psbrush 压感笔刷
-    let brush = new fabric.PSBrush(canvas);
-    brush.width = 3;
-    brush.color = "#000";
-    canvas.freeDrawingBrush = brush;
   },
 
   data() {
@@ -157,6 +157,7 @@ export default {
   watch: {
     drawMode: {
       handler(newValue) {
+        console.log(newValue);
         if (newValue == "pen") {
           canvas.isDrawingMode = true;
         } else if (newValue == "eraser") {
