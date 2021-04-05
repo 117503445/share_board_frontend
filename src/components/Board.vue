@@ -15,6 +15,8 @@
         style="width: 130px"
       ></el-input-number>
 
+      <el-button @click="btn_clear()">clear</el-button>
+
       <i v-if="isConnected" class="el-icon-loading"></i>
       <i v-else class="el-icon-magic-stick"></i>
     </el-aside>
@@ -29,6 +31,7 @@
 
 <script>
 let canvas;
+let ws;
 export default {
   mounted() {
     let self = this;
@@ -51,7 +54,6 @@ export default {
 
     canvas.on("selection:created", function (e) {
       canvas.discardActiveObject(); //清除选中框
-
       // 选中事件
       // 清除所有选中的笔迹
       let removeIdList = new Array();
@@ -70,7 +72,8 @@ export default {
       var json = JSON.stringify({ route: "strokes-delete", id: removeIdList });
       ws.send(json);
     });
-    function canvas_up(options) {
+
+    function canvas_up() {
       if (self.drawMode === "pen") {
         let objects = canvas.toJSON()["objects"];
         let lastObject = objects[objects.length - 1];
@@ -87,8 +90,6 @@ export default {
     brush.width = 3;
     brush.color = "#000";
     canvas.freeDrawingBrush = brush;
-
-    var ws;
 
     function connectWS() {
       ws = new WebSocket(import.meta.env.VITE_WS_HOST + "/api/ws");
@@ -123,6 +124,8 @@ export default {
           let canvasJson = canvas.toJSON();
           canvasJson["objects"] = receivedJson["data"];
           canvas.loadFromJSON(JSON.stringify(canvasJson));
+        } else if (route == "strokes-clear") {
+          canvas.clear();
         }
       };
 
@@ -178,6 +181,14 @@ export default {
         });
         ws.send(json);
       },
+    },
+  },
+  methods: {
+    btn_clear() {
+      canvas.clear();
+
+      var json = JSON.stringify({ route: "strokes-clear" });
+      ws.send(json);
     },
   },
 };
